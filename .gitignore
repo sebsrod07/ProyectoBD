@@ -1,0 +1,27 @@
+# Build
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Rider / VSCode
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# NuGet
+packages/
+
+# ASP.NET secrets
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+
+# OS
+.DS_Store
+Thumbs.db
