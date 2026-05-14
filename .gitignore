@@ -1,6 +1,7 @@
 # Build
 bin/
 obj/
+pages/
 
 # Visual Studio
 .vs/
