@@ -16,7 +16,7 @@ Pages/
 *.log
 
 # NuGet
-packages/
+packages/|
 
 # ASP.NET secrets
 appsettings.json
