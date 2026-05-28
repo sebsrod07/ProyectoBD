@@ -29,13 +29,13 @@ public class AuthenticationController : BaseController
     
         if(user.Permiso.ToUpper()=="DOCTOR")
         {
-            cs = _config.GetConnectionString("DoctorConecction");
+            cs = _config.GetConnectionString("DoctorConnection");
             token=Guid.NewGuid().ToString();
             sesiones[token] = new LoginInfo{permiso=user.Permiso,idUsuario=user.IdUsuario};
         }
         else if(user.Permiso.ToUpper()=="PACIENTE")
         {
-            cs = _config.GetConnectionString("DoctorConecction");
+            cs = _config.GetConnectionString("DoctorConnection");
             token=Guid.NewGuid().ToString();
             sesiones[token] = new LoginInfo{permiso=user.Permiso,idUsuario=user.IdUsuario};
         }
