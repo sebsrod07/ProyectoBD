@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Models;
 using DTOs;
 namespace Controllers;
 [ApiController]
@@ -14,7 +13,7 @@ public class PacientesController : BaseController
     [Route("/pacientes")]
     public async Task<IResult> GetPacientes(string token)
     {
-        using var dbDynamic=ObtenerContextoDinamico(token,"PACIENTE");
+        using var dbDynamic=ObtenerContextoDinamico(token,"DOCTOR");
         var idUsuario=AuthenticationController.sesiones[token].idUsuario;
         try
         {

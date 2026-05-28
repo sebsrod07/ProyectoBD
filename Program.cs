@@ -1,18 +1,16 @@
-using System.Reflection.Metadata.Ecma335;
-using Azure.Messaging;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using Models;
 var builder = WebApplication.CreateBuilder(args);
+// --- INICIO DE LA PRUEBA DE FUEGO ---
+var cadenaPrueba = builder.Configuration.GetConnectionString("DefaultConnection");
+// --- FIN DE LA PRUEBA DE FUEGO ---
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<ProyectoBdV1Context>(options =>
    options.UseSqlServer(
-       builder.Configuration.GetConnectionString("DefaultConnection")
+        builder.Configuration.GetConnectionString("DefaultConnection")
    ));
 builder.Services.AddEndpointsApiExplorer();
 
@@ -22,5 +20,4 @@ app.UseSwagger();
 app.UseSwaggerUI();
 Dictionary<string, LoginInfo> sesiones = new();
 
-
- app.Run();
+app.Run();
