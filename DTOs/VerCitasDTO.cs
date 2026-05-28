@@ -1,4 +1,4 @@
-namespace Models;
+namespace DTOs;
 public class VerCitasResult
 {
     public int idPaciente { get; set; }
