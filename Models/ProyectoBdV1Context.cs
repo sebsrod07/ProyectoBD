@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Models;
 
@@ -31,11 +30,6 @@ public partial class ProyectoBdV1Context : DbContext
     public virtual DbSet<Persona> Personas { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
-<<<<<<< HEAD
-
-  
-=======
->>>>>>> e5c568e51f2753b46678c64253edc90f070b2583
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Cita>(entity =>
