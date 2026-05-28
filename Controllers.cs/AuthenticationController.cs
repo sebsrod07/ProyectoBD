@@ -35,7 +35,11 @@ public class AuthenticationController : BaseController
         }
         else if(user.Permiso.ToUpper()=="PACIENTE")
         {
+<<<<<<< HEAD
             cs = _config.GetConnectionString("PacienteConnection");
+=======
+            cs = _config.GetConnectionString("DoctorConnection");
+>>>>>>> e5c568e51f2753b46678c64253edc90f070b2583
             token=Guid.NewGuid().ToString();
             sesiones[token] = new LoginInfo{permiso=user.Permiso,idUsuario=user.IdUsuario};
         }
