@@ -17,11 +17,11 @@ public class CitasController:BaseController
     {
         using var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE");
         if(dbDynamic ==null)
-            Results.Unauthorized(); 
+            return Results.Unauthorized(); 
         try
         {
-            await dbDynamic.Database.ExecuteSqlInterpolatedAsync($" EXEC InsertarCita @idDoctor={cita.idDoctor}, @idPaciente={cita.idPaciente}, @fecha={cita.FechaCita}");
-            return Results.Ok("Creada");
+            var res=await dbDynamic.Database.ExecuteSqlInterpolatedAsync($" EXEC InsertarCita @idDoctor={cita.idDoctor}, @idPaciente={cita.idPaciente}, @fecha={cita.FechaCita}");
+            return Results.Ok("CREADA");
         }
         catch (SqlException ex)
         {

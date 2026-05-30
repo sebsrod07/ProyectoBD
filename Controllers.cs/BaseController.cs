@@ -30,6 +30,7 @@ public class BaseController : ControllerBase
             "DOCTOR" => "DoctorConnection",
             "SECRETARIO" => "SecretarioConnection", 
             "PACIENTE" => "PacienteConnection",
+            "DEFAULT"=>"DefaultConnection",
             _ => null
         };
 

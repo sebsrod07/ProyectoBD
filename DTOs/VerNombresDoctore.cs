@@ -10,4 +10,6 @@ public partial class VerNombresDoctore
     public int IdDoctor { get; set; }
 
     public string NombreCompleto { get; set; } = null!;
+    public string nombreEspecialidad{get;set;} = null!;
+    public decimal cobroPorConsulta {get;set;}
 }

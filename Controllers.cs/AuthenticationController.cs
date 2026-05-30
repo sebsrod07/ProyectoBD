@@ -62,4 +62,14 @@ public class AuthenticationController : BaseController
             return Results.Unauthorized();
         return Results.Ok(sesiones[token].permiso.ToUpper());
     }
+    [HttpGet]
+    [Route("/getMiId")]
+    public async Task<IResult> getMiId(string token)
+    {
+
+        using var dbDynamic=ObtenerContextoDinamico(token,"DEFAULT");
+        if(dbDynamic is null)
+            return Results.Unauthorized();
+        return Results.Ok(sesiones[token].idUsuario);
+    }
 }

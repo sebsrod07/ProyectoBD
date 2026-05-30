@@ -28,4 +28,16 @@ public class PacientesController : BaseController
         }
             
     }
+    [HttpGet]
+    [Route("/getIdPaciente")]
+    public async Task<IResult> getIdPaciente(string token)
+    {
+        using var dbDynamic=ObtenerContextoDinamico(token,"PACIENTE");
+        if(dbDynamic is null)
+            return Results.Unauthorized();
+        var idUsuario=AuthenticationController.sesiones[token].idUsuario;
+        return Results.Ok(
+            dbDynamic.Pacientes.FromSqlInterpolated($"SELECT dbo.getIdPaciente({idUsuario}) as value")
+        );
+    }
 }

@@ -139,10 +139,6 @@ public partial class ProyectoBdContext : DbContext
                 .HasForeignKey(d => d.IdEmpleado)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Doctores__idEmpl__07C12930");
-
-            entity.HasOne(d => d.IdEspecialidadNavigation).WithMany(p => p.Doctores)
-                .HasForeignKey(d => d.IdEspecialidad)
-                .HasConstraintName("FK_Doctores_Especialidadad");
         });
 
         modelBuilder.Entity<Empleado>(entity =>

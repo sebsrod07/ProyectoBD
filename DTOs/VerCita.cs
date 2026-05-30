@@ -16,4 +16,5 @@ public partial class VerCita
     public int FolioCita { get; set; }
 
     public int IdPaciente { get; set; }
+    public string estatus {get;set;}
 }
