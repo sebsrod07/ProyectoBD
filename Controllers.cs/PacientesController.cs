@@ -36,8 +36,7 @@ public class PacientesController : BaseController
         if(dbDynamic is null)
             return Results.Unauthorized();
         var idUsuario=AuthenticationController.sesiones[token].idUsuario;
-        return Results.Ok(
-            dbDynamic.Pacientes.FromSqlInterpolated($"SELECT dbo.getIdPaciente({idUsuario}) as value")
-        );
+        var idPaciente= await dbDynamic.Database.SqlQuery<int>($"SELECT dbo.getIdPaciente({idUsuario}) as value").FirstAsync();
+        return Results.Ok(idPaciente);
     }
 }
