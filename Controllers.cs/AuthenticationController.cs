@@ -6,12 +6,12 @@ namespace Controllers;
 [ApiController]
 public class AuthenticationController : BaseController
 {
-    private readonly ProyectoBdV1Context _db;
+    private readonly ProyectoBdContext _db;
     private readonly IConfiguration _config;
 
     public static Dictionary<string, LoginInfo> sesiones = new();
 
-    public AuthenticationController(ProyectoBdV1Context db, IConfiguration config) : base(config)
+    public AuthenticationController(ProyectoBdContext db, IConfiguration config) : base(config)
     {
         _db = db;
         _config = config;
@@ -44,8 +44,8 @@ public class AuthenticationController : BaseController
         }
         try
         {
-            var options=new DbContextOptionsBuilder<ProyectoBdV1Context>().UseSqlServer(cs).Options;
-            var dbDynamic=new ProyectoBdV1Context(options);
+            var options=new DbContextOptionsBuilder<ProyectoBdContext>().UseSqlServer(cs).Options;
+            var dbDynamic=new ProyectoBdContext(options);
             await dbDynamic.Database.OpenConnectionAsync();
             return Results.Ok(new { token=token});
         }

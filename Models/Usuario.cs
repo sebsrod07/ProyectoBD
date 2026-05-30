@@ -19,7 +19,7 @@ public partial class Usuario
     /// </summary>
     public string Permiso { get; set; } = null!;
 
-    public virtual ICollection<Doctore> Doctores { get; set; } = new List<Doctore>();
-
     public virtual ICollection<Empleado> Empleados { get; set; } = new List<Empleado>();
+
+    public virtual ICollection<Paciente> Pacientes { get; set; } = new List<Paciente>();
 }

@@ -11,7 +11,11 @@ public partial class Paciente
 
     public string Curp { get; set; } = null!;
 
+    public int? IdUsuario { get; set; }
+
     public virtual ICollection<Cita> Cita { get; set; } = new List<Cita>();
 
     public virtual Persona CurpNavigation { get; set; } = null!;
+
+    public virtual Usuario? IdUsuarioNavigation { get; set; }
 }

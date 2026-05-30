@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DTOs;
+using Models;
 namespace Controllers;
 [ApiController]
 public class PacientesController : BaseController
@@ -18,7 +19,7 @@ public class PacientesController : BaseController
         try
         {
             int idDoctor = await dbDynamic.Database.SqlQuery<int>($"SELECT dbo.getIdDoctor({idUsuario}) as value").FirstAsync();
-            var citas =await dbDynamic.Database.SqlQuery<VerCitasResult>($"SELECT * FROM VerCitas({idDoctor})").ToListAsync();
+            var citas =await dbDynamic.Database.SqlQuery<VerCita>($"SELECT * FROM VerCitas where idDoctor={idDoctor}").ToListAsync();
             return Results.Ok(citas);
         }
         catch (Exception ex)

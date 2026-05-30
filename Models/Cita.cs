@@ -20,4 +20,6 @@ public partial class Cita
     public virtual Doctore IdDoctorNavigation { get; set; } = null!;
 
     public virtual Paciente IdPacienteNavigation { get; set; } = null!;
+
+    public virtual ICollection<Recetum> Receta { get; set; } = new List<Recetum>();
 }

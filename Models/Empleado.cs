@@ -19,6 +19,8 @@ public partial class Empleado
 
     public string? Curp { get; set; }
 
+    public virtual ICollection<Cobro> Cobros { get; set; } = new List<Cobro>();
+
     public virtual Persona? CurpNavigation { get; set; }
 
     public virtual ICollection<Doctore> Doctores { get; set; } = new List<Doctore>();

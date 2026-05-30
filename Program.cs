@@ -8,7 +8,7 @@ builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddDbContext<ProyectoBdV1Context>(options =>
+builder.Services.AddDbContext<ProyectoBdContext>(options =>
    options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
    ));
