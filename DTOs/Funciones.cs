@@ -1,6 +1,6 @@
 using Models;
 using Controllers;
-namespace Funciones;
+namespace DTOs;
 
 public class postCitasDTO
 {

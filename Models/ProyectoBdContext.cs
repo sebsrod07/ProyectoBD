@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-
+using DTOs;
 namespace Models;
 
 public partial class ProyectoBdContext : DbContext

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using DTOs;
-using Funciones;
+using Microsoft.Data.SqlClient;
 namespace Controllers;
 [ApiController]
 public class CitasController:BaseController
@@ -20,12 +20,12 @@ public class CitasController:BaseController
             Results.Unauthorized(); 
         try
         {
-            dbDynamic.Citas.FromSqlInterpolated($" EXEC ValidarCita @idDoctor={cita.idDoctor}, @idPaciente={cita.idPaciente}, @fecha={cita.FechaCita}");
+            await dbDynamic.Database.ExecuteSqlInterpolatedAsync($" EXEC InsertarCita @idDoctor={cita.idDoctor}, @idPaciente={cita.idPaciente}, @fecha={cita.FechaCita}");
             return Results.Ok("Creada");
         }
-        catch (Exception ex)
+        catch (SqlException ex)
         {
-            return Results.BadRequest(ex);
+            return Results.BadRequest(new {mensaje=ex.Message});
         }
         
     }

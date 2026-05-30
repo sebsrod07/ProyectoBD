@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Models;
+namespace DTOs;
 
 public partial class VerHorariosDoctore
 {
