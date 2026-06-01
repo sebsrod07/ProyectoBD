@@ -21,12 +21,12 @@ public class AuthenticationController : BaseController
     [Route("/login")]
   public async Task<IResult> Login(Models.LoginRequest request)
 {
-    // 1. EL TRY DEBE INICIAR DESDE EL MILISEGUNDO CERO
+
     try
     {
         string cs = string.Empty;
         
-        // ¡Si esto falla, ahora sí caerá en el catch de abajo!
+
         var user = _db.Usuarios.FirstOrDefault(u => u.Contraseña == request.password && u.NombreUsuario == request.nombreUsuario);
         
         if (user is null)
@@ -43,7 +43,7 @@ public class AuthenticationController : BaseController
         else if (user.Permiso.ToUpper() == "PACIENTE")
         {
             cs = _config.GetConnectionString("PacienteConnection");
-            // OJO: Borré la línea duplicada que sobreescribía con "DoctorConnection"
+          
             token = Guid.NewGuid().ToString();
             sesiones[token] = new LoginInfo { permiso = user.Permiso, idUsuario = user.IdUsuario };
         }

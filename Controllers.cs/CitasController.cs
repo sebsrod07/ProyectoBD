@@ -25,7 +25,24 @@ public class CitasController:BaseController
         }
         catch (SqlException ex)
         {
-            return Results.BadRequest(new {mensaje=ex.Message});
+            return Results.BadRequest( ex.Message);
+        }
+        
+    }
+    [HttpGet]
+    [Route("/paciente/verCitas")]
+    public async Task<IResult> verCita(string token, int idPaciente)
+    {
+        using var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE");
+        if(dbDynamic is null)
+            return Results.Unauthorized();
+        try
+        {
+            return Results.Ok(dbDynamic.VerCitas.ToList().Where(c=>c.IdPaciente==idPaciente));
+        }
+        catch(Exception ex)
+        {
+            return Results.BadRequest(ex.Message);
         }
         
     }

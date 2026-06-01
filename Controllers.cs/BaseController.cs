@@ -6,7 +6,6 @@ namespace Controllers;
 
 public class BaseController : ControllerBase
 {
-    // Usamos 'protected' para que los controladores hijos puedan acceder a la configuración
     protected readonly IConfiguration _config;
 
     public BaseController(IConfiguration config)
