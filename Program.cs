@@ -17,5 +17,4 @@ app.MapControllers();
 app.UseSwagger();
 app.UseSwaggerUI();
 Dictionary<string, LoginInfo> sesiones = new();
-app.MapGet("/",() =>"HOLA");
 app.Run();
