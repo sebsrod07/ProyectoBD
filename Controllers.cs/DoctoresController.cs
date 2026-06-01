@@ -13,23 +13,24 @@ public class DoctoresController:BaseController
     }
     [HttpGet]
     [Route("/getDoctores")]
-    public async Task<IResult> verDoctores(string token, int? idEspecialidad)
+    public async Task<IResult> verDoctores(string token, int? idEspecialidad, int? idDoctor)
     {
         using var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE");
         if(dbDynamic is null)
             return Results.Unauthorized();
+        var query=dbDynamic.Doctores.AsQueryable();
         try
         {
-            if(idEspecialidad is null)
+            if(idEspecialidad.HasValue)
             {
-                var doctores = await dbDynamic.VerNombresDoctores.FromSqlRaw("select * from verNombresDoctores order by nombreEspecialidad").ToListAsync();
-                return Results.Ok(doctores);
+                query=query.Where(p=>p.IdEspecialidad==idEspecialidad);
             }
-            else
+            if(idDoctor.HasValue)
             {
-                var doctores = await dbDynamic.VerNombresDoctores.FromSqlInterpolated($"select * from verNombresDoctores where idEspecialidad={idEspecialidad} order by nombreEspecialidad").ToListAsync();
-                return Results.Ok(doctores);
+                query=query.Where(d=>d.IdDoctor==idDoctor);
             }
+            return Results.Ok(query.ToList());
+            
         }
         catch (Exception ex)
         {
