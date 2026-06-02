@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Models;
 using DTOs;
 using Microsoft.Data.SqlClient;
 namespace Controllers;
@@ -45,5 +44,22 @@ public class CitasController:BaseController
             return Results.BadRequest(ex.Message);
         }
         
+    }
+    [HttpPut]
+    [Route("/cancelarCita")]
+    public async Task<IResult> cancelaCita(string token, int folioCita)
+    {
+        using var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE");
+        if(dbDynamic is null)
+            return Results.Unauthorized();
+        try
+        {
+            dbDynamic.Database.ExecuteSqlInterpolated($" EXEC cancelarCita @folioCita={folioCita}");
+            return Results.Ok("CITA CANCELADA");
+        }
+        catch(Exception ex)
+        {
+            return Results.BadRequest(ex.Message);
+        }
     }
 }
