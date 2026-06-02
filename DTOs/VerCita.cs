@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DTOs;
+namespace Models;
 
 public partial class VerCita
 {
@@ -16,5 +16,6 @@ public partial class VerCita
     public int FolioCita { get; set; }
 
     public int IdPaciente { get; set; }
-    public string estatus {get;set;}
+
+    public string Estatus { get; set; } = null!;
 }

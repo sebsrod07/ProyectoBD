@@ -10,4 +10,6 @@ public partial class Especialidadad
     public string NombreEspecialidad { get; set; } = null!;
 
     public decimal CobroPorConsulta { get; set; }
+
+    public virtual ICollection<Doctore> Doctores { get; set; } = new List<Doctore>();
 }

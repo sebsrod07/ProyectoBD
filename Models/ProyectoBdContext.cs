@@ -21,6 +21,8 @@ public partial class ProyectoBdContext : DbContext
 
     public virtual DbSet<Consultorio> Consultorios { get; set; }
 
+    public virtual DbSet<Devolucione> Devoluciones { get; set; }
+
     public virtual DbSet<Doctore> Doctores { get; set; }
 
     public virtual DbSet<Empleado> Empleados { get; set; }
@@ -32,6 +34,8 @@ public partial class ProyectoBdContext : DbContext
     public virtual DbSet<Medicamento> Medicamentos { get; set; }
 
     public virtual DbSet<Paciente> Pacientes { get; set; }
+
+    public virtual DbSet<Pago> Pagos { get; set; }
 
     public virtual DbSet<Persona> Personas { get; set; }
 
@@ -53,6 +57,7 @@ public partial class ProyectoBdContext : DbContext
 
     public virtual DbSet<VerNombresPaciente> VerNombresPacientes { get; set; }
 
+ 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AS");
@@ -127,6 +132,27 @@ public partial class ProyectoBdContext : DbContext
                 .HasConstraintName("FK_Consultorios_Doctores");
         });
 
+        modelBuilder.Entity<Devolucione>(entity =>
+        {
+            entity.HasKey(e => e.FolioDevolucion).HasName("PK__devoluci__485AC239810F15CC");
+
+            entity.ToTable("devoluciones");
+
+            entity.Property(e => e.FolioDevolucion).HasColumnName("folioDevolucion");
+            entity.Property(e => e.FechaDevolucion)
+                .HasColumnType("datetime")
+                .HasColumnName("fechaDevolucion");
+            entity.Property(e => e.FolioPago).HasColumnName("folioPago");
+            entity.Property(e => e.MontoDevuelto)
+                .HasColumnType("money")
+                .HasColumnName("montoDevuelto");
+
+            entity.HasOne(d => d.FolioPagoNavigation).WithMany(p => p.Devoluciones)
+                .HasForeignKey(d => d.FolioPago)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_devoluciones_Pago");
+        });
+
         modelBuilder.Entity<Doctore>(entity =>
         {
             entity.HasKey(e => e.IdDoctor).HasName("PK__Doctores__418956C31AF176E4");
@@ -139,6 +165,10 @@ public partial class ProyectoBdContext : DbContext
                 .HasForeignKey(d => d.IdEmpleado)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Doctores__idEmpl__07C12930");
+
+            entity.HasOne(d => d.IdEspecialidadNavigation).WithMany(p => p.Doctores)
+                .HasForeignKey(d => d.IdEspecialidad)
+                .HasConstraintName("FK_Doctores_Especialidadad");
         });
 
         modelBuilder.Entity<Empleado>(entity =>
@@ -236,6 +266,30 @@ public partial class ProyectoBdContext : DbContext
                 .HasConstraintName("FK_Pacientes_Usuarios");
         });
 
+        modelBuilder.Entity<Pago>(entity =>
+        {
+            entity.HasKey(e => e.FolioPago).HasName("PK__Pago__8BD981CBD6766CD7");
+
+            entity.ToTable("Pago");
+
+            entity.Property(e => e.FolioPago).HasColumnName("folioPago");
+            entity.Property(e => e.EstatusPago)
+                .HasMaxLength(50)
+                .HasColumnName("estatusPago");
+            entity.Property(e => e.FechaPago)
+                .HasColumnType("datetime")
+                .HasColumnName("fechaPago");
+            entity.Property(e => e.FolioCita).HasColumnName("folioCita");
+            entity.Property(e => e.MontoPagado)
+                .HasColumnType("money")
+                .HasColumnName("montoPagado");
+
+            entity.HasOne(d => d.FolioCitaNavigation).WithMany(p => p.Pagos)
+                .HasForeignKey(d => d.FolioCita)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Pago__folioCita__42E1EEFE");
+        });
+
         modelBuilder.Entity<Persona>(entity =>
         {
             entity.HasKey(e => e.Curp);
@@ -284,7 +338,7 @@ public partial class ProyectoBdContext : DbContext
 
             entity.HasOne(d => d.FolioCitaNavigation).WithMany(p => p.Receta)
                 .HasForeignKey(d => d.FolioCita)
-                .HasConstraintName("FK__Receta__folioCit__37703C52");
+                .HasConstraintName("FK_Receta_Citas");
         });
 
         modelBuilder.Entity<Servicio>(entity =>
@@ -361,6 +415,10 @@ public partial class ProyectoBdContext : DbContext
             entity.Property(e => e.Doctor)
                 .HasMaxLength(203)
                 .IsUnicode(false);
+            entity.Property(e => e.Estatus)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("estatus");
             entity.Property(e => e.Fecha)
                 .HasColumnType("datetime")
                 .HasColumnName("fecha");
@@ -387,11 +445,19 @@ public partial class ProyectoBdContext : DbContext
                 .HasNoKey()
                 .ToView("verNombresDoctores");
 
+            entity.Property(e => e.CobroPorConsulta)
+                .HasColumnType("money")
+                .HasColumnName("cobroPorConsulta");
             entity.Property(e => e.IdDoctor).HasColumnName("idDoctor");
             entity.Property(e => e.IdEmpleado).HasColumnName("idEmpleado");
+            entity.Property(e => e.IdEspecialidad).HasColumnName("idEspecialidad");
             entity.Property(e => e.NombreCompleto)
                 .HasMaxLength(203)
                 .IsUnicode(false);
+            entity.Property(e => e.NombreEspecialidad)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("nombreEspecialidad");
         });
 
         modelBuilder.Entity<VerNombresEmpleado>(entity =>

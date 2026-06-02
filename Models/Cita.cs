@@ -21,5 +21,7 @@ public partial class Cita
 
     public virtual Paciente IdPacienteNavigation { get; set; } = null!;
 
+    public virtual ICollection<Pago> Pagos { get; set; } = new List<Pago>();
+
     public virtual ICollection<Recetum> Receta { get; set; } = new List<Recetum>();
 }
