@@ -47,14 +47,14 @@ public class CitasController:BaseController
     }
     [HttpPut]
     [Route("/cancelarCita")]
-    public async Task<IResult> cancelaCita(string token, int folioCita)
+    public async Task<IResult> cancelaCita(string token, int folioCita, int idPaciente)
     {
         using var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE");
         if(dbDynamic is null)
             return Results.Unauthorized();
         try
         {
-            dbDynamic.Database.ExecuteSqlInterpolated($" EXEC cancelarCita @folioCita={folioCita}");
+            dbDynamic.Database.ExecuteSqlInterpolated($" EXEC cancelarCita @folioCita={folioCita}, @idPaciente={idPaciente}");
             return Results.Ok("CITA CANCELADA");
         }
         catch(Exception ex)
