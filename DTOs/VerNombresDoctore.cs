@@ -16,4 +16,8 @@ public partial class VerNombresDoctore
     public string NombreEspecialidad { get; set; } = null!;
 
     public decimal CobroPorConsulta { get; set; }
+
+    public TimeOnly HoraIncio { get; set; }
+
+    public TimeOnly HoraFin { get; set; }
 }

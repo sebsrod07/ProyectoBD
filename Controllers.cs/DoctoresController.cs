@@ -13,23 +13,42 @@ public class DoctoresController:BaseController
     }
     [HttpGet]
     [Route("/getDoctores")]
-    public async Task<IResult> verDoctores(string token, int? idEspecialidad)
+    public async Task<IResult> verDoctores(string token, int? idEspecialidad, bool? horario, int? idDoc)
     {
-        using var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE");
-        if(dbDynamic is null)
+        using var dbDynamic = ObtenerContextoDinamico(token, "PACIENTE");
+        if (dbDynamic is null)
             return Results.Unauthorized();
+
         try
         {
-            if(idEspecialidad is null)
+            bool verHorario = horario ?? false;
+
+            if (idEspecialidad.HasValue && verHorario && idDoc.HasValue)
             {
-                var doctores = await dbDynamic.VerNombresDoctores.FromSqlRaw("select * from verNombresDoctores order by nombreEspecialidad").ToListAsync();
-                return Results.Ok(doctores);
+                var hora = await dbDynamic.VerNombresDoctores
+                    .Where(d => d.IdEspecialidad == idEspecialidad && d.IdDoctor == idDoc)
+                    .Select(d => new { d.HoraIncio, d.HoraFin })
+                    .FirstOrDefaultAsync(); 
+                if (hora == null)
+                    return Results.NotFound("No se encontraron horarios para este doctor.");
+                return Results.Ok($"Horas Disponibles: {hora.HoraIncio} - {hora.HoraFin}");
             }
-            else
+
+            var query = dbDynamic.VerNombresDoctores.AsQueryable();
+            if (idEspecialidad.HasValue)
             {
-                var doctores = await dbDynamic.VerNombresDoctores.FromSqlInterpolated($"select * from verNombresDoctores where idEspecialidad={idEspecialidad} order by nombreEspecialidad").ToListAsync();
-                return Results.Ok(doctores);
+                query = query.Where(d => d.IdEspecialidad == idEspecialidad);
             }
+            if(idDoc.HasValue)
+            {
+                query=query.Where(d=>d.IdDoctor==idDoc);
+            }
+            var doctores = await query
+                .OrderBy(d => d.NombreEspecialidad)
+                .ToListAsync();
+            if(doctores.Count()==0)
+                return Results.NotFound("No Existen Doctores en este filtro");
+            return Results.Ok(doctores);
         }
         catch (Exception ex)
         {
