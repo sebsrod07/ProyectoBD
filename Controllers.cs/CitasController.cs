@@ -30,20 +30,29 @@ public class CitasController:BaseController
         
     }
     [HttpGet]
-    [Route("/paciente/verCitas")]
-    public async Task<IResult> verCita(string token, int idPaciente)
+    [Route("/verCitas")]
+    public async Task<IResult> verCita(string token, int? idPaciente, DateOnly? fechaF, string? estatusF )
     {
         using var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE");
         if(dbDynamic is null)
             return Results.Unauthorized();
+        var query=dbDynamic.VerCitas.AsQueryable();
         try
         {
-            return Results.Ok(dbDynamic.VerCitas.ToList().Where(c=>c.IdPaciente==idPaciente));
+            if(fechaF.HasValue)
+                query=query.Where(c=>c.Fecha.Day==fechaF.Value.Day && c.Fecha.Month==fechaF.Value.Month && c.Fecha.Year==fechaF.Value.Year);
+            if(!string.IsNullOrEmpty(estatusF))
+                query=query.Where(c=>c.Estatus==estatusF);
+            if(idPaciente.HasValue)
+                query=query.Where(c=>c.IdPaciente==idPaciente);
+            return Results.Ok(query.ToList());
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return Results.BadRequest(ex.Message);
         }
+        
+
         
     }
     [HttpPut]

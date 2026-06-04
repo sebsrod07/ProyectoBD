@@ -6,7 +6,6 @@ namespace Controllers;
 [ApiController]
 public class PacientesController : BaseController
 {
-    private readonly IConfiguration _config;
     public PacientesController(IConfiguration config) :base(config)
     {
     }

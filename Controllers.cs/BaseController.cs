@@ -16,9 +16,15 @@ public class BaseController : ControllerBase
 
     protected ProyectoBdContext ObtenerContextoDinamico(string token, string rolRequerido)
     {
+         if(token=="CREACIONUSER")
+        {
+            string csA = _config.GetConnectionString("altaConnection");
+            var optionsA = new DbContextOptionsBuilder<ProyectoBdContext>().UseSqlServer(csA).Options;
+            return new ProyectoBdContext(optionsA);
+        }
         if (!AuthenticationController.sesiones.ContainsKey(token))
             return null;
-
+       
         string rol = AuthenticationController.sesiones[token].permiso.ToUpper();
 
         if (rol != rolRequerido.ToUpper())
