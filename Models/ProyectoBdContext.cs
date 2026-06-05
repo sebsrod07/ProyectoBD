@@ -29,6 +29,8 @@ public partial class ProyectoBdContext : DbContext
 
     public virtual DbSet<Especialidadad> Especialidadads { get; set; }
 
+    public virtual DbSet<HistoriaMedica> HistoriaMedicas { get; set; }
+
     public virtual DbSet<Horario> Horarios { get; set; }
 
     public virtual DbSet<Medicamento> Medicamentos { get; set; }
@@ -49,6 +51,8 @@ public partial class ProyectoBdContext : DbContext
 
     public virtual DbSet<VerCita> VerCitas { get; set; }
 
+    public virtual DbSet<VerHistoriaMedica> VerHistoriaMedicas { get; set; }
+
     public virtual DbSet<VerHorariosDoctore> VerHorariosDoctores { get; set; }
 
     public virtual DbSet<VerNombresDoctore> VerNombresDoctores { get; set; }
@@ -57,7 +61,7 @@ public partial class ProyectoBdContext : DbContext
 
     public virtual DbSet<VerNombresPaciente> VerNombresPacientes { get; set; }
 
- 
+  
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AS");
@@ -216,6 +220,32 @@ public partial class ProyectoBdContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("nombreEspecialidad");
+        });
+
+        modelBuilder.Entity<HistoriaMedica>(entity =>
+        {
+            entity.HasKey(e => e.IdHistoriaMedica);
+
+            entity.ToTable("HistoriaMedica");
+
+            entity.Property(e => e.IdHistoriaMedica).HasColumnName("idHistoriaMedica");
+            entity.Property(e => e.Alergias)
+                .IsUnicode(false)
+                .HasColumnName("alergias");
+            entity.Property(e => e.Estatura)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("estatura");
+            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
+            entity.Property(e => e.PadecimientosPrevios)
+                .IsUnicode(false)
+                .HasColumnName("padecimientosPrevios");
+            entity.Property(e => e.Peso)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("peso");
+            entity.Property(e => e.TipoSangre)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("tipoSangre");
         });
 
         modelBuilder.Entity<Horario>(entity =>
@@ -428,6 +458,39 @@ public partial class ProyectoBdContext : DbContext
             entity.Property(e => e.Paciente)
                 .HasMaxLength(203)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<VerHistoriaMedica>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("verHistoriaMedica");
+
+            entity.Property(e => e.Alergias)
+                .IsUnicode(false)
+                .HasColumnName("alergias");
+            entity.Property(e => e.Curp)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("CURP");
+            entity.Property(e => e.Estatura)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("estatura");
+            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
+            entity.Property(e => e.NombreCompleto)
+                .HasMaxLength(203)
+                .IsUnicode(false)
+                .HasColumnName("nombreCompleto");
+            entity.Property(e => e.PadecimientosPrevios)
+                .IsUnicode(false)
+                .HasColumnName("padecimientosPrevios");
+            entity.Property(e => e.Peso)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("peso");
+            entity.Property(e => e.TipoSangre)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("tipoSangre");
         });
 
         modelBuilder.Entity<VerHorariosDoctore>(entity =>
