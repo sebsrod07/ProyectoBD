@@ -31,7 +31,8 @@ public class HistoriaMedicaController : BaseController
     [Route("/paciente/verHistoria")]
     public async Task<IResult> verHistorias(string token, int? idPaciente, int? idHistoria, string? CURP, string? Nombre, string? Alergias, decimal? peso, decimal? estatura, string? padecimientosPrevios, int? edad)
     {
-        var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE");
+        var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE")??
+        ObtenerContextoDinamico(token, "DOCTOR");
         if(dbDynamic is null)
             return Results.Unauthorized();
         try

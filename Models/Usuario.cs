@@ -21,5 +21,7 @@ public partial class Usuario
 
     public virtual ICollection<Empleado> Empleados { get; set; } = new List<Empleado>();
 
+    public virtual ICollection<Notificacione> Notificaciones { get; set; } = new List<Notificacione>();
+
     public virtual ICollection<Paciente> Pacientes { get; set; } = new List<Paciente>();
 }

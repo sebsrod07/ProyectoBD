@@ -55,4 +55,22 @@ public class DoctoresController:BaseController
             return Results.BadRequest(ex.Message);
         }
     }
+    [HttpGet]
+    [Route("/getIdDoctor")]
+    public async Task<IResult> getIdDoctor(string token)
+    {
+        var dbDynamic = ObtenerContextoDinamico(token, "DOCTOR");
+        if (dbDynamic is null)
+            return Results.Unauthorized();
+        try
+        {
+            int idUserDoc= dbDynamic.Database.SqlQuery<int>($"select dbo.getIdDoctor({AuthenticationController.sesiones[token].idUsuario}) as Value").First();
+            return Results.Ok(idUserDoc);
+        }
+        catch(Exception ex)
+        {
+            return Results.BadRequest(ex.Message);
+        }
+        
+    }
 }

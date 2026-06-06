@@ -35,6 +35,8 @@ public partial class ProyectoBdContext : DbContext
 
     public virtual DbSet<Medicamento> Medicamentos { get; set; }
 
+    public virtual DbSet<Notificacione> Notificaciones { get; set; }
+
     public virtual DbSet<Paciente> Pacientes { get; set; }
 
     public virtual DbSet<Pago> Pagos { get; set; }
@@ -61,7 +63,9 @@ public partial class ProyectoBdContext : DbContext
 
     public virtual DbSet<VerNombresPaciente> VerNombresPacientes { get; set; }
 
-  
+    public virtual DbSet<VerReceta> VerRecetas { get; set; }
+
+   
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AS");
@@ -274,6 +278,23 @@ public partial class ProyectoBdContext : DbContext
                 .HasColumnName("tratamiento");
         });
 
+        modelBuilder.Entity<Notificacione>(entity =>
+        {
+            entity.HasKey(e => e.IdNotificacion).HasName("PK_Notificaiones");
+
+            entity.Property(e => e.IdNotificacion).HasColumnName("idNotificacion");
+            entity.Property(e => e.IdUsuario).HasColumnName("idUsuario");
+            entity.Property(e => e.Leida).HasColumnName("leida");
+            entity.Property(e => e.Mensaje)
+                .IsUnicode(false)
+                .HasColumnName("mensaje");
+
+            entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.Notificaciones)
+                .HasForeignKey(d => d.IdUsuario)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Notificaiones_Usuarios");
+        });
+
         modelBuilder.Entity<Paciente>(entity =>
         {
             entity.HasKey(e => e.IdPaciente).HasName("PK__Paciente__F48A08F27F279B8D");
@@ -351,15 +372,16 @@ public partial class ProyectoBdContext : DbContext
 
         modelBuilder.Entity<Recetum>(entity =>
         {
-            entity.HasKey(e => new { e.FolioReceta, e.Medicamentos }).HasName("PK__tmp_ms_x__B6C45C7DFE6D21A9");
+            entity.HasKey(e => new { e.FolioReceta, e.Medicamentos }).HasName("PK__tmp_ms_x__B6C45C7DB54F18B4");
 
-            entity.Property(e => e.FolioReceta)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("folioReceta");
+            entity.Property(e => e.FolioReceta).HasColumnName("folioReceta");
             entity.Property(e => e.Medicamentos)
                 .HasMaxLength(200)
                 .IsUnicode(false)
                 .HasColumnName("medicamentos");
+            entity.Property(e => e.FechaReceta)
+                .HasColumnType("datetime")
+                .HasColumnName("fechaReceta");
             entity.Property(e => e.FolioCita).HasColumnName("folioCita");
             entity.Property(e => e.Observaciones)
                 .HasMaxLength(100)
@@ -368,6 +390,7 @@ public partial class ProyectoBdContext : DbContext
 
             entity.HasOne(d => d.FolioCitaNavigation).WithMany(p => p.Receta)
                 .HasForeignKey(d => d.FolioCita)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Receta_Citas");
         });
 
@@ -543,6 +566,31 @@ public partial class ProyectoBdContext : DbContext
 
             entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
             entity.Property(e => e.NombreCompleto)
+                .HasMaxLength(203)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<VerReceta>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("verRecetas");
+
+            entity.Property(e => e.Doctor)
+                .HasMaxLength(203)
+                .IsUnicode(false);
+            entity.Property(e => e.FolioReceta).HasColumnName("folioReceta");
+            entity.Property(e => e.IdDoctor).HasColumnName("idDoctor");
+            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
+            entity.Property(e => e.Medicamentos)
+                .HasMaxLength(8000)
+                .IsUnicode(false)
+                .HasColumnName("medicamentos");
+            entity.Property(e => e.Observaciones)
+                .HasMaxLength(8000)
+                .IsUnicode(false)
+                .HasColumnName("observaciones");
+            entity.Property(e => e.Paciente)
                 .HasMaxLength(203)
                 .IsUnicode(false);
         });

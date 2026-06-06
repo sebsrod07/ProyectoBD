@@ -11,15 +11,26 @@ public class PacientesController : BaseController
     }
     [HttpGet]
     [Route("/pacientes")]
-    public async Task<IResult> GetPacientes(string token)
+    public async Task<IResult> GetPacientes(string token, int idDoc)
     {
         using var dbDynamic=ObtenerContextoDinamico(token,"DOCTOR");
         var idUsuario=AuthenticationController.sesiones[token].idUsuario;
         try
         {
-            int idDoctor = await dbDynamic.Database.SqlQuery<int>($"SELECT dbo.getIdDoctor({idUsuario}) as value").FirstAsync();
-            var citas =await dbDynamic.Database.SqlQuery<VerCita>($"SELECT * FROM VerCitas where idDoctor={idDoctor}").ToListAsync();
-            return Results.Ok(citas);
+            var citasDoc=dbDynamic.VerCitas.Where(c=>c.IdDoctor==idDoc);
+            List<VerNombresPaciente> pacientesDoc=new List<VerNombresPaciente>();
+            foreach(VerCita cita in citasDoc)
+            {
+                pacientesDoc.Add(
+                    new VerNombresPaciente
+                    {
+                        IdPaciente=cita.IdPaciente,
+                        NombreCompleto=cita.Paciente
+                    }
+                );
+            }
+            return Results.Ok(pacientesDoc);
+            
         }
         catch (Exception ex)
         {

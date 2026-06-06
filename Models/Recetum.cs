@@ -9,9 +9,11 @@ public partial class Recetum
 
     public string Medicamentos { get; set; } = null!;
 
-    public int? FolioCita { get; set; }
+    public int FolioCita { get; set; }
 
     public string? Observaciones { get; set; }
 
-    public virtual Cita? FolioCitaNavigation { get; set; }
+    public DateTime FechaReceta { get; set; }
+
+    public virtual Cita FolioCitaNavigation { get; set; } = null!;
 }
