@@ -65,7 +65,7 @@ public partial class ProyectoBdContext : DbContext
 
     public virtual DbSet<VerReceta> VerRecetas { get; set; }
 
-   
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AS");
@@ -250,6 +250,11 @@ public partial class ProyectoBdContext : DbContext
                 .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("tipoSangre");
+
+            entity.HasOne(d => d.IdPacienteNavigation).WithMany(p => p.HistoriaMedicas)
+                .HasForeignKey(d => d.IdPaciente)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_HistoriaMedica_Pacientes");
         });
 
         modelBuilder.Entity<Horario>(entity =>
@@ -478,6 +483,7 @@ public partial class ProyectoBdContext : DbContext
             entity.Property(e => e.FolioCita).HasColumnName("folioCita");
             entity.Property(e => e.IdDoctor).HasColumnName("idDoctor");
             entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
+            entity.Property(e => e.NumeroConsultorio).HasColumnName("numeroConsultorio");
             entity.Property(e => e.Paciente)
                 .HasMaxLength(203)
                 .IsUnicode(false);

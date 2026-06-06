@@ -18,4 +18,6 @@ public partial class HistoriaMedica
     public decimal Peso { get; set; }
 
     public decimal Estatura { get; set; }
+
+    public virtual Paciente IdPacienteNavigation { get; set; } = null!;
 }

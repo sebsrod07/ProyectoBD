@@ -9,7 +9,7 @@ public partial class VerCita
 
     public string Doctor { get; set; } = null!;
 
-    public string Paciente { get; set; } = null!;
+    public string? Paciente { get; set; }
 
     public DateTime Fecha { get; set; }
 
@@ -18,4 +18,6 @@ public partial class VerCita
     public int IdPaciente { get; set; }
 
     public string Estatus { get; set; } = null!;
+
+    public int? NumeroConsultorio { get; set; }
 }

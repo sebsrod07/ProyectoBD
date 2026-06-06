@@ -17,5 +17,7 @@ public partial class Paciente
 
     public virtual Persona CurpNavigation { get; set; } = null!;
 
+    public virtual ICollection<HistoriaMedica> HistoriaMedicas { get; set; } = new List<HistoriaMedica>();
+
     public virtual Usuario? IdUsuarioNavigation { get; set; }
 }
