@@ -14,7 +14,7 @@ public class EspecialidadController:BaseController
     [Route("/getEspecialidades")]
     public async Task<IResult> verEspecialidades(string token, int? idEspecialidad)
     {
-        using var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE");
+        using var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE")??ObtenerContextoDinamico(token, "SECRETARIO");
         if(dbDynamic is null)
             return Results.Unauthorized();
         var especialidades=await dbDynamic.Especialidadads.ToListAsync();

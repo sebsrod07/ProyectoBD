@@ -19,47 +19,34 @@ public class AuthenticationController : BaseController
 
     [HttpPost]
     [Route("/login")]
-  public async Task<IResult> Login(Models.LoginRequest request)
-{
-
-    try
+    public async Task<IResult> Login(Models.LoginRequest request)
     {
-        string cs = string.Empty;
-        
 
-        var user = _db.Usuarios.FirstOrDefault(u => u.Contraseña == request.password && u.NombreUsuario == request.nombreUsuario);
-        
-        if (user is null)
-            return Results.NotFound();
+        try
+        {
+            string cs = string.Empty;
             
-        string token = string.Empty;
 
-        if (user.Permiso.ToUpper() == "DOCTOR")
-        {
-            cs = _config.GetConnectionString("DoctorConnection");
-            token = Guid.NewGuid().ToString();
-            sesiones[token] = new LoginInfo { permiso = user.Permiso, idUsuario = user.IdUsuario };
+            var user = _db.Usuarios.FirstOrDefault(u => u.Contraseña == request.password && u.NombreUsuario == request.nombreUsuario);
+            
+            if (user is null)
+                return Results.NotFound();
+            string token = string.Empty;
+            var dbDynamic = ObtenerContextoDinamico(token,"PACIENTE")??ObtenerContextoDinamico(token,"DOCTOR")??ObtenerContextoDinamico(token,"SECRETARIO");
+            token=Guid.NewGuid().ToString();
+            sesiones[token]=new LoginInfo
+            {
+                permiso=user.Permiso,
+                idUsuario=user.IdUsuario
+            };
+            return Results.Ok(new { token = token });
         }
-        else if (user.Permiso.ToUpper() == "PACIENTE")
+        catch (Exception ex)
         {
-            cs = _config.GetConnectionString("PacienteConnection");
-          
-            token = Guid.NewGuid().ToString();
-            sesiones[token] = new LoginInfo { permiso = user.Permiso, idUsuario = user.IdUsuario };
-        }
-
-        var options = new DbContextOptionsBuilder<ProyectoBdContext>().UseSqlServer(cs).Options;
-        var dbDynamic = new ProyectoBdContext(options);
-        await dbDynamic.Database.OpenConnectionAsync();
-        
-        return Results.Ok(new { token = token });
+            // 2. USAR RESULTS.PROBLEM PARA IMPRIMIR EL ERROR DETALLADO
+            return Results.Problem(detail: ex.ToString(), title: "Error fatal en la base de datos");
+        }  
     }
-    catch (Exception ex)
-    {
-        // 2. USAR RESULTS.PROBLEM PARA IMPRIMIR EL ERROR DETALLADO
-        return Results.Problem(detail: ex.ToString(), title: "Error fatal en la base de datos");
-    }  
-}
     [HttpGet]
     [Route("/login/permisos")]
     public async Task<IResult> getPermisos(string token)

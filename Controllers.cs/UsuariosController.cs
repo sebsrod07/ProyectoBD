@@ -10,24 +10,75 @@ public class UsuariosController:BaseController
     {}
     [HttpPost]
     [Route("/crearUsuario")]
-    public async Task<IResult> crearUsuario(string idUsuario, string pass, [FromBody]Persona P)
+    public async Task<IResult> crearUsuario(string idUsuario, string pass, [FromBody]Persona P, bool? esDoc, bool? esSec, string? token )
     {
         try
         {
-            var dbDynamic=ObtenerContextoDinamico("CREACIONUSER","");
+            if(!esDoc.HasValue)
+                esDoc=false;
+            if(!esSec.HasValue)
+                esSec=false;
+            var dbDynamic=ObtenerContextoDinamico(token, "SECRETARIO")??ObtenerContextoDinamico("CREACIONUSER","");
             if(dbDynamic is null)
                 throw new Exception("Algo salio mal al conectarse a la BD");
-            await dbDynamic.Database.ExecuteSqlInterpolatedAsync($@"
-            EXEC crearUsuarioPaciente 
-                @nombreUser = {idUsuario}, 
-                @contra = {pass}, 
-                @pNom = {P.PrimerNombre}, 
-                @sNom = {P.SegundoNombre}, 
-                @aP = {P.ApellidoPaterno}, 
-                @aM = {P.ApellidoMaterno}, 
-                @fn = {P.FechaNacimiento.ToString("yyyy-MM-dd")}, 
-                @curp = {P.Curp}
-        ");
+            if(!esDoc.Value && !esSec.Value)
+            {
+                await dbDynamic.Database.ExecuteSqlInterpolatedAsync($@"
+                EXEC crearUsuarioPaciente 
+                    @nombreUser = {idUsuario}, 
+                    @contra = {pass}, 
+                    @pNom = {P.PrimerNombre}, 
+                    @sNom = {P.SegundoNombre}, 
+                    @aP = {P.ApellidoPaterno}, 
+                    @aM = {P.ApellidoMaterno}, 
+                    @fn = {P.FechaNacimiento.ToString("yyyy-MM-dd")}, 
+                    @curp = {P.Curp},
+                    @esDoc=0,
+                    @esSecretario=0");
+                await dbDynamic.SaveChangesAsync();
+                
+            }
+            else if(esDoc.Value)
+            {
+                await dbDynamic.Database.ExecuteSqlInterpolatedAsync($@"
+                EXEC crearUsuarioPaciente 
+                    @nombreUser = {idUsuario}, 
+                    @contra = {pass}, 
+                    @pNom = {P.PrimerNombre}, 
+                    @sNom = {P.SegundoNombre}, 
+                    @aP = {P.ApellidoPaterno}, 
+                    @aM = {P.ApellidoMaterno}, 
+                    @fn = {P.FechaNacimiento.ToString("yyyy-MM-dd")}, 
+                    @curp = {P.Curp},
+                    @esDoc=1,
+                    @esSecretario=0");
+                await dbDynamic.SaveChangesAsync();
+                var idUser=dbDynamic.Usuarios.Where(u=>u.NombreUsuario==idUsuario).ToList().First().IdUsuario;
+                int idEmpleado=dbDynamic.Database.SqlQuery<int>($"select dbo.getIdEmpleado({idUser}) as Value").First();
+                return Results.Ok(idEmpleado);
+            }
+            else if(esSec.Value)
+            {
+                await dbDynamic.Database.ExecuteSqlInterpolatedAsync($@"
+                EXEC crearUsuarioPaciente 
+                    @nombreUser = {idUsuario}, 
+                    @contra = {pass}, 
+                    @pNom = {P.PrimerNombre}, 
+                    @sNom = {P.SegundoNombre}, 
+                    @aP = {P.ApellidoPaterno}, 
+                    @aM = {P.ApellidoMaterno}, 
+                    @fn = {P.FechaNacimiento.ToString("yyyy-MM-dd")}, 
+                    @curp = {P.Curp},
+                    @esDoc=0,
+                    @esSecretario=1");
+                await dbDynamic.SaveChangesAsync();
+                var idUser=dbDynamic.Usuarios.Where(u=>u.NombreUsuario==idUsuario).ToList().First().IdUsuario;
+                var idEmpleado=dbDynamic.Database.SqlQuery<int>($"select dbo.getIdEmpleado({idUser}) as Value").First();
+                return Results.Ok(idEmpleado);
+
+            }
+            else
+                throw new Exception ("Algo Salio mal al crear el usuario");
             await dbDynamic.SaveChangesAsync();
             return Results.Ok("CREADO");
         }
