@@ -86,4 +86,25 @@ public class EmpleadosController:BaseController
             return Results.BadRequest(ex.Message);
         }
     }
+    [HttpGet]
+    [Route("/empleados/getEmpleados")]
+    public async Task <IResult> getEmpleados(string token, int? idEmpleado)
+    {
+        var dbDynamic = ObtenerContextoDinamico(token, "SECRETARIO");
+        if (dbDynamic is null)
+            return Results.Unauthorized();
+        try
+        {
+            var query=dbDynamic.VerNombresEmpleados.AsQueryable();
+            if(idEmpleado.HasValue)
+                query=query.Where(e=>e.IdEmpleado==idEmpleado);
+            query=query.Where(e=>e.Estatus=="Trabajando");
+            query=query.OrderBy(c=>c.NombreCompleto);
+            return Results.Ok(query.ToList());
+        }
+        catch(Exception ex)
+        {
+            return Results.BadRequest(ex.Message);
+        }
+    }
 }

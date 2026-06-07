@@ -11,7 +11,7 @@ public partial class Empleado
 
     public int? IdHorario { get; set; }
 
-    public int Salario { get; set; }
+    public decimal Salario { get; set; }
 
     public int? IdUsuario { get; set; }
 

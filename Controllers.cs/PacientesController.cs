@@ -11,25 +11,33 @@ public class PacientesController : BaseController
     }
     [HttpGet]
     [Route("/pacientes")]
-    public async Task<IResult> GetPacientes(string token, int idDoc)
+    public async Task<IResult> GetPacientes(string token, int? idDoc)
     {
-        using var dbDynamic=ObtenerContextoDinamico(token,"DOCTOR");
+        using var dbDynamic=ObtenerContextoDinamico(token,"DOCTOR")??ObtenerContextoDinamico(token,"SECRETARIO");
         var idUsuario=AuthenticationController.sesiones[token].idUsuario;
         try
         {
-            var citasDoc=dbDynamic.VerCitas.Where(c=>c.IdDoctor==idDoc);
-            List<VerNombresPaciente> pacientesDoc=new List<VerNombresPaciente>();
-            foreach(VerCita cita in citasDoc)
+            if(idDoc.HasValue)
             {
-                pacientesDoc.Add(
-                    new VerNombresPaciente
-                    {
-                        IdPaciente=cita.IdPaciente,
-                        NombreCompleto=cita.Paciente
-                    }
-                );
+                var citasDoc=dbDynamic.VerCitas.Where(c=>c.IdDoctor==idDoc);
+                List<VerNombresPaciente> pacientesDoc=new List<VerNombresPaciente>();
+                foreach(VerCita cita in citasDoc)
+                {
+                    pacientesDoc.Add(
+                        new VerNombresPaciente
+                        {
+                            IdPaciente=cita.IdPaciente,
+                            NombreCompleto=cita.Paciente
+                        }
+                    );
+                }
+                return Results.Ok(pacientesDoc);
             }
-            return Results.Ok(pacientesDoc);
+            else
+            {
+                return Results.Ok(dbDynamic.VerNombresPacientes.OrderBy(p=>p.NombreCompleto).ToList());
+            }
+            
             
         }
         catch (Exception ex)

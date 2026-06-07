@@ -65,7 +65,7 @@ public partial class ProyectoBdContext : DbContext
 
     public virtual DbSet<VerReceta> VerRecetas { get; set; }
 
-
+  
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AS");
@@ -194,6 +194,7 @@ public partial class ProyectoBdContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("fechaContratacion");
             entity.Property(e => e.IdUsuario).HasColumnName("idUsuario");
+            entity.Property(e => e.Salario).HasColumnType("money");
 
             entity.HasOne(d => d.CurpNavigation).WithMany(p => p.Empleados)
                 .HasForeignKey(d => d.Curp)
@@ -558,10 +559,17 @@ public partial class ProyectoBdContext : DbContext
                 .HasNoKey()
                 .ToView("verNombresEmpleados");
 
+            entity.Property(e => e.Estatus)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.FechaContratacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fechaContratacion");
             entity.Property(e => e.IdEmpleado).HasColumnName("idEmpleado");
             entity.Property(e => e.NombreCompleto)
                 .HasMaxLength(203)
                 .IsUnicode(false);
+            entity.Property(e => e.Salario).HasColumnType("money");
         });
 
         modelBuilder.Entity<VerNombresPaciente>(entity =>
@@ -570,6 +578,11 @@ public partial class ProyectoBdContext : DbContext
                 .HasNoKey()
                 .ToView("verNombresPacientes");
 
+            entity.Property(e => e.Curp)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("CURP");
+            entity.Property(e => e.FechaRegistro).HasColumnType("datetime");
             entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
             entity.Property(e => e.NombreCompleto)
                 .HasMaxLength(203)

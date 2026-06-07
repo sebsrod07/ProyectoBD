@@ -7,5 +7,9 @@ public partial class VerNombresPaciente
 {
     public int IdPaciente { get; set; }
 
-    public string? NombreCompleto { get; set; }
+    public string NombreCompleto { get; set; } = null!;
+
+    public string Curp { get; set; } = null!;
+
+    public DateTime? FechaRegistro { get; set; }
 }

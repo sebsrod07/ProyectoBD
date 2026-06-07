@@ -62,7 +62,7 @@ public class CitasController:BaseController
     [Route("/cancelarCita")]
     public async Task<IResult> cancelaCita(string token, int folioCita, int idPaciente, bool cancelaDoc)
     {
-        using var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE") ?? ObtenerContextoDinamico(token, "DOCTOR");
+        using var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE") ?? ObtenerContextoDinamico(token, "DOCTOR") ?? ObtenerContextoDinamico(token, "SECRETARIO");
         if(dbDynamic is null)
             return Results.Unauthorized();
         try
