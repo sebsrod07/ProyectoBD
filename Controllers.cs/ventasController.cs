@@ -22,7 +22,7 @@ public class ventasController:BaseController
                 if(venta.medicamentos.HasValue)
                 {
                     dbDynamic.Database.ExecuteSqlInterpolatedAsync($@"EXEC
-                    venderMEdicamento @idMedicameto={venta.medicamentos.idMedicameto} @cantidad={venta.medicamentos.cantidad}");
+                    venderMedicamento @idMedicameto={venta.medicamentos.idMedicameto} @cantidad={venta.medicamentos.cantidad}");
                 }
                 dbDynamic.Database.ExecuteSqlInterpolatedAsync($@"")
 
