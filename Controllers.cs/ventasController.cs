@@ -22,6 +22,7 @@ public class ventasController:BaseController
             {
                 FechaTicket=DateTime.Now   
             });
+            await dbDynamic.SaveChangesAsync();
             int idTicket= dbDynamic.Tickets.OrderBy(t=>t.IdTicket).ToList().Max().IdTicket;
             foreach(ventaGeneral venta in ventas)
             {
@@ -35,7 +36,6 @@ public class ventasController:BaseController
                     dbDynamic.Database.ExecuteSqlAsync($@"EXEC 
                     venderServicio @idServicio={venta.servicios.idServicio} @cantidad={venta.servicios.cantidad}, idTicket={idTicket}");
                 }
-
             }
             return Results.Ok("TDBN");
         }
@@ -43,6 +43,15 @@ public class ventasController:BaseController
         {
             return Results.BadRequest(Ex.Message);
         }
+    }
+    [HttpGet]
+    [route("/ventas/visualizarVenta")]
+    public async task<Iresult> verVenta(string token, List<ventaGeneral> ventas)
+    {
+        var dbDynamic = ObtenerContextoDinamico(token, "SECRETARIO");
+        if(dbDynamic is null)
+            return results.unauthorized();
+        
     }
 
 }
