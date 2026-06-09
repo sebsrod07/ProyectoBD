@@ -14,6 +14,4 @@ public partial class Cobro
     public int? IdEmpleado { get; set; }
 
     public virtual Empleado? IdEmpleadoNavigation { get; set; }
-
-    public virtual Ticket? IdTicketNavigation { get; set; }
 }

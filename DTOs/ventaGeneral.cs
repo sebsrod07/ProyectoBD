@@ -1,6 +1,6 @@
 namespace DTOs;
 public partial class ventaGeneral
 {
-    ventaMedicamento? medicamentos {get;set;}
-    ventaServicio? servicios{get;set;}
+    public ventaMedicamento? medicamentos {get;set;}
+    public ventaServicio? servicios{get;set;}
 }

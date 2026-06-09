@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+
 namespace Controllers;
 public class ServiciosController:BaseController
 {
@@ -7,18 +9,18 @@ public class ServiciosController:BaseController
     }
     [HttpGet]
     [Route("/servicios/verServicios")]
-    public async task<IResult> verServicios(string token)
+    public async Task<IResult> verServicios(string token)
     {
         var dbDynamic=ObtenerContextoDinamico(token, "SECRETARIO");
         if(dbDynamic is null)
             return Results.Unauthorized();
         try
         {
-            return Results.ok(dbDynamic.Servicios.OrderBy(s=>s.NombreServicio).ToList());
+            return Results.Ok(dbDynamic.Servicios.OrderBy(s=>s.NombreServicio).ToList());
         }
         catch(Exception ex)
         {
-            return Results.badRequest(ex.message);
+            return Results.BadRequest(ex.Message);
         }
 
     }

@@ -16,42 +16,69 @@ public class ventasController:BaseController
         var  dbDynamic= ObtenerContextoDinamico(token, "SECRETARIO");
         if(dbDynamic is null)
             return Results.Unauthorized();
+        var nuevoTicket = new Ticket
+        {
+            FechaTicket = DateTime.Now   
+        };
+        
+        dbDynamic.Tickets.Add(nuevoTicket);
+        await dbDynamic.SaveChangesAsync();
+        int idTicket = nuevoTicket.IdTicket;
         try
         {
-            dbDynamic.Tickets.Add(new Ticket
-            {
-                FechaTicket=DateTime.Now   
-            });
-            await dbDynamic.SaveChangesAsync();
-            int idTicket= dbDynamic.Tickets.OrderBy(t=>t.IdTicket).ToList().Max().IdTicket;
+            
             foreach(ventaGeneral venta in ventas)
             {
                 if(venta.medicamentos is not null)
                 {
                     await dbDynamic.Database.ExecuteSqlInterpolatedAsync($@"EXEC
-                    venderMedicamento @idMedicameto={venta.medicamentos.idMedicameto} @cantidad={venta.medicamentos.cantidad}, idTicket={idTicket}");
+                    venderMedicamento @idMedicamento={venta.medicamentos.idmedicamento}, @cantidad={venta.medicamentos.cantidad}, @idTicket={idTicket}");
                 }
                 if(venta.servicios is not null)
                 {
-                    dbDynamic.Database.ExecuteSqlAsync($@"EXEC 
-                    venderServicio @idServicio={venta.servicios.idServicio} @cantidad={venta.servicios.cantidad}, idTicket={idTicket}");
+                    await dbDynamic.Database.ExecuteSqlAsync($@"EXEC 
+                    venderServicio @idServicio={venta.servicios.idServicio}, @cantidad={venta.servicios.cantidad}, @idTicket={idTicket}");
                 }
             }
+            var ticket = await dbDynamic.Tickets.FindAsync(idTicket);
+            ticket.TotalTicket=await dbDynamic.Database.SqlQuery<decimal>($"select  dbo.calculaTotal({idTicket}) as Value").FirstOrDefaultAsync();
+            await dbDynamic.SaveChangesAsync();
             return Results.Ok("TDBN");
         }
         catch(Exception Ex)
         {
+            var ticketFallido = await dbDynamic.Tickets.FindAsync(idTicket);
+            if (ticketFallido != null)
+            {
+                ticketFallido.TotalTicket = 0; 
+                await dbDynamic.SaveChangesAsync(); 
+            }
             return Results.BadRequest(Ex.Message);
         }
     }
-    [HttpGet]
-    [route("/ventas/visualizarVenta")]
-    public async task<Iresult> verVenta(string token, List<ventaGeneral> ventas)
+    [HttpPost]
+    [Route("/ventas/visualizarVenta")]
+    public async Task<IResult> verVenta(string token,[FromBody] List<ventaGeneral> ventas)
     {
         var dbDynamic = ObtenerContextoDinamico(token, "SECRETARIO");
         if(dbDynamic is null)
-            return results.unauthorized();
-        
+            return Results.Unauthorized();
+        decimal total=0;
+        decimal precio;
+        foreach(ventaGeneral venta in ventas)
+        {
+            if(venta.medicamentos is not null)
+            {
+                precio=await dbDynamic.Medicamentos.Where(m=>m.IdMedicamento==venta.medicamentos.idmedicamento).Select(m=>m.PrecioMedicamento).FirstAsync();
+                total=total+venta.medicamentos.cantidad * precio;
+            }
+            if(venta.servicios is not null)
+            {
+                precio= await dbDynamic.Servicios.Where(m=>m.IdServicio==venta.servicios.idServicio).Select(m=>m.PrecioServicio).FirstAsync();
+                total=total+venta.servicios.cantidad * precio;
+            }
+        }
+        return Results.Ok(total);
     }
 
 }

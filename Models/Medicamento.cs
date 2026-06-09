@@ -15,5 +15,5 @@ public partial class Medicamento
 
     public decimal PrecioMedicamento { get; set; }
 
-    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+    public virtual ICollection<TicketMedicamento> TicketMedicamentos { get; set; } = new List<TicketMedicamento>();
 }

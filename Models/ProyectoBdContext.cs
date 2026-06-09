@@ -49,6 +49,10 @@ public partial class ProyectoBdContext : DbContext
 
     public virtual DbSet<Ticket> Tickets { get; set; }
 
+    public virtual DbSet<TicketMedicamento> TicketMedicamentos { get; set; }
+
+    public virtual DbSet<TicketServicio> TicketServicios { get; set; }
+
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
     public virtual DbSet<VerCita> VerCitas { get; set; }
@@ -113,10 +117,6 @@ public partial class ProyectoBdContext : DbContext
             entity.HasOne(d => d.IdEmpleadoNavigation).WithMany(p => p.Cobros)
                 .HasForeignKey(d => d.IdEmpleado)
                 .HasConstraintName("FK__Cobro__IdEmplead__31B762FC");
-
-            entity.HasOne(d => d.IdTicketNavigation).WithMany(p => p.Cobros)
-                .HasForeignKey(d => d.IdTicket)
-                .HasConstraintName("FK__Cobro__idTicket__30C33EC3");
         });
 
         modelBuilder.Entity<Consultorio>(entity =>
@@ -430,18 +430,41 @@ public partial class ProyectoBdContext : DbContext
             entity.Property(e => e.FechaTicket)
                 .HasColumnType("datetime")
                 .HasColumnName("fechaTicket");
+            entity.Property(e => e.TotalTicket)
+                .HasColumnType("money")
+                .HasColumnName("totalTicket");
+        });
+
+        modelBuilder.Entity<TicketMedicamento>(entity =>
+        {
+            entity.HasKey(e => new { e.IdMedicamento, e.IdTicket });
+
+            entity.ToTable("ticketMedicamento");
+
             entity.Property(e => e.IdMedicamento).HasColumnName("idMedicamento");
-            entity.Property(e => e.IdServicio).HasColumnName("idServicio");
-            entity.Property(e => e.NumeroMedicamentos).HasColumnName("numeroMedicamentos");
-            entity.Property(e => e.NumeroServicios).HasColumnName("numeroServicios");
+            entity.Property(e => e.IdTicket).HasColumnName("idTicket");
+            entity.Property(e => e.Cantidad).HasColumnName("cantidad");
 
-            entity.HasOne(d => d.IdMedicamentoNavigation).WithMany(p => p.Tickets)
+            entity.HasOne(d => d.IdMedicamentoNavigation).WithMany(p => p.TicketMedicamentos)
                 .HasForeignKey(d => d.IdMedicamento)
-                .HasConstraintName("FK__Ticket__idMedica__2DE6D218");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ticketMedicamento_Medicamento");
+        });
 
-            entity.HasOne(d => d.IdServicioNavigation).WithMany(p => p.Tickets)
+        modelBuilder.Entity<TicketServicio>(entity =>
+        {
+            entity.HasKey(e => new { e.IdServicio, e.IdTicket });
+
+            entity.ToTable("ticketServicio");
+
+            entity.Property(e => e.IdServicio).HasColumnName("idServicio");
+            entity.Property(e => e.IdTicket).HasColumnName("idTicket");
+            entity.Property(e => e.Cantidad).HasColumnName("cantidad");
+
+            entity.HasOne(d => d.IdServicioNavigation).WithMany(p => p.TicketServicios)
                 .HasForeignKey(d => d.IdServicio)
-                .HasConstraintName("FK__Ticket__idServic__2BFE89A6");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ticketServicio_Servicio");
         });
 
         modelBuilder.Entity<Usuario>(entity =>

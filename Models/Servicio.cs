@@ -13,5 +13,5 @@ public partial class Servicio
 
     public decimal PrecioServicio { get; set; }
 
-    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
+    public virtual ICollection<TicketServicio> TicketServicios { get; set; } = new List<TicketServicio>();
 }
