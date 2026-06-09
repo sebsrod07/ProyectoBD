@@ -14,11 +14,15 @@ public class UsuariosController:BaseController
     {
         try
         {
+            ProyectoBdContext dbDynamic;
             if(!esDoc.HasValue)
                 esDoc=false;
             if(!esSec.HasValue)
                 esSec=false;
-            var dbDynamic=ObtenerContextoDinamico(token, "SECRETARIO")??ObtenerContextoDinamico("CREACIONUSER","");
+            if(string.IsNullOrEmpty(token))
+               {  dbDynamic= ObtenerContextoDinamico("CREACIONUSER","");}
+            else
+               { dbDynamic=ObtenerContextoDinamico(token, "SECRETARIO");}
             if(dbDynamic is null)
                 throw new Exception("Algo salio mal al conectarse a la BD");
             if(!esDoc.Value && !esSec.Value)
