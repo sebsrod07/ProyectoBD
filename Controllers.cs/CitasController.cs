@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DTOs;
 using Microsoft.Data.SqlClient;
-using System.Data.SqlTypes;
 using Models;
 namespace Controllers;
 [ApiController]
@@ -34,7 +33,7 @@ public class CitasController:BaseController
     [Route("/verCitas")]
     public async Task<IResult> verCita(string token, int? idPaciente, DateOnly? fechaF, string? estatusF, int? idDoc )
     {
-        using var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE") ?? ObtenerContextoDinamico(token, "DOCTOR");
+        using var dbDynamic=ObtenerContextoDinamico(token, "PACIENTE") ?? ObtenerContextoDinamico(token, "DOCTOR") ?? ObtenerContextoDinamico(token, "SECRETARIO");
         if(dbDynamic is null)
             return Results.Unauthorized();
         var query=dbDynamic.VerCitas.AsQueryable();

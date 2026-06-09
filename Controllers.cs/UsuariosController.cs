@@ -88,8 +88,7 @@ public class UsuariosController:BaseController
         }
         catch(Exception ex)
         {
-            string errorReal = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            return Results.BadRequest($"Error de SQL: {errorReal}");
+            return Results.BadRequest(ex.Message);
         } 
         
     }
