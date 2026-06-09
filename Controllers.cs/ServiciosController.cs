@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Controllers;
 public class ServiciosController:BaseController
@@ -16,7 +17,8 @@ public class ServiciosController:BaseController
             return Results.Unauthorized();
         try
         {
-            return Results.Ok(dbDynamic.Servicios.OrderBy(s=>s.NombreServicio).ToList());
+            var servicios=await dbDynamic.Servicios.OrderBy(s=>s.NombreServicio).ToListAsync();
+            return Results.Ok(servicios);
         }
         catch(Exception ex)
         {

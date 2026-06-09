@@ -43,7 +43,7 @@ public class ventasController:BaseController
             var ticket = await dbDynamic.Tickets.FindAsync(idTicket);
             ticket.TotalTicket=await dbDynamic.Database.SqlQuery<decimal>($"select  dbo.calculaTotal({idTicket}) as Value").FirstOrDefaultAsync();
             await dbDynamic.SaveChangesAsync();
-            return Results.Ok("TDBN");
+            return Results.Ok("Venta Registrada Correctamente");
         }
         catch(Exception Ex)
         {
