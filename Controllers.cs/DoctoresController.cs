@@ -73,5 +73,32 @@ public class DoctoresController:BaseController
         }
         
     }
-    
+    [HttpPut]
+    [Route("/doctores/darDeBaja")]
+    public Task<IResult> darDeBajaDoc(string token, int idDoc)
+    {
+        var dbDynamic =ObtenerContextoDinamico(token, "SECRETARIO");
+        if(dbDynamic is null)
+            return Results.Unauthorized();
+        try
+        {
+            var doctor=await dbDynamic.Doctores.Where(d=>d.idDoctor==idDoc).FirstOrDefaultAsync();
+            if(doctor.Cita.Where(c=>c-Estatus=="PENDIENTE DE ATENCION") is null)
+            {
+                await dbDynamic.Empleados.Where(e=>e.IdEmpleado==doctor.IdEmpleado).FirstOrDefaultAsync().Estatus="BAJA";
+                await dbDynamic.Database.SaveChangesAsync();
+            }
+            else
+            {
+                throw new Exception("El Doctor tiene Citas pendientes");
+            }
+            return Results.Ok("Empleado dado de baja");
+        }
+        catch(Excepction Ex)
+        {
+            return Results.BadRequest(Ex.Message);
+        }
+        
+        
+    }
 }
