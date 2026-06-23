@@ -16,7 +16,7 @@ public class RecetasController:BaseController
         try
         {
             await dbDynamic.Database.ExecuteSqlInterpolatedAsync($"EXEC crearReceta @medicamentosList={Medicamentos}, @observacionesList={Observaciones}, @folioCita={folioCita}");
-            return Results.Ok();
+            return Results.Ok("Creada Correctamente");
         }
         catch(Exception ex)
         {

@@ -11,5 +11,9 @@ public partial class TicketServicio
 
     public int Cantidad { get; set; }
 
+    public int? IdEmpleado { get; set; }
+
+    public virtual Empleado? IdEmpleadoNavigation { get; set; }
+
     public virtual Servicio IdServicioNavigation { get; set; } = null!;
 }

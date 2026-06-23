@@ -17,6 +17,8 @@ public partial class Cita
 
     public DateTime FechaRegistro { get; set; }
 
+    public bool? CancelaDoc { get; set; }
+
     public virtual Doctore IdDoctorNavigation { get; set; } = null!;
 
     public virtual Paciente IdPacienteNavigation { get; set; } = null!;

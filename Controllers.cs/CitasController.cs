@@ -108,36 +108,7 @@ public class CitasController:BaseController
         }
             
     }
-    [HttpPut]
-    [Route("/finalizarCita")]
-    public async Task<IResult> finalizarCita(string token, int folioCita, int idDoc)
-    {
-        using var dbDynamic=ObtenerContextoDinamico(token, "DOCTOR");
-        if(dbDynamic is null)
-            return Results.Unauthorized();
-        try
-        {
-            if(dbDynamic.Citas.FirstOrDefault(C=>C.FolioCita==folioCita && C.IdDoctor==idDoc) is null)
-                throw new Exception ("No existe esta cita");
-            var citaAfinalizar= dbDynamic.Citas.First(C=>C.FolioCita==folioCita && C.IdDoctor==idDoc);
-
-
-            if(citaAfinalizar.Fecha>DateTime.Now)
-                throw new Exception ("Esta cita aun no sucede");
-            if(citaAfinalizar.Estatus=="CANCELADA")
-                throw new Exception("Esta cita esta cancelada");
-            if(citaAfinalizar.Estatus=="FINALIZADA")
-                throw new Exception("Esta cita ya esta finalizada");
-            if(citaAfinalizar.Estatus=="PENDIENTE DE PAGO"||citaAfinalizar.Estatus=="PENDIENTE DE ATENCION")
-                throw new Exception("No puedes cancelar esta cita");
-            citaAfinalizar.Estatus="FINALIZADA";
-            await dbDynamic.SaveChangesAsync();
-            return Results.Ok("ACTUALIZADA");
-        }
-        catch (Exception ex)
-        {
-            return Results.BadRequest(ex.Message);
-        }
+   
             
-    }
+    
 }

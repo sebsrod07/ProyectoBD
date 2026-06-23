@@ -11,7 +11,7 @@ public class ventasController:BaseController
     }
     [HttpPost]
     [Route("/secretario/ventas")]
-    public async Task<IResult> hacerVenta(string token, [FromBody] List<ventaGeneral> ventas)
+    public async Task<IResult> hacerVenta(string token, [FromBody] List<ventaGeneral> ventas, int idEmpleado)
     {
         var  dbDynamic= ObtenerContextoDinamico(token, "SECRETARIO");
         if(dbDynamic is null)
@@ -32,12 +32,12 @@ public class ventasController:BaseController
                 if(venta.medicamentos is not null)
                 {
                     await dbDynamic.Database.ExecuteSqlInterpolatedAsync($@"EXEC
-                    venderMedicamento @idMedicamento={venta.medicamentos.idmedicamento}, @cantidad={venta.medicamentos.cantidad}, @idTicket={idTicket}");
+                    venderMedicamento @idMedicamento={venta.medicamentos.idmedicamento}, @cantidad={venta.medicamentos.cantidad}, @idTicket={idTicket}, @idEmpleado={idEmpleado}");
                 }
                 if(venta.servicios is not null)
                 {
                     await dbDynamic.Database.ExecuteSqlAsync($@"EXEC 
-                    venderServicio @idServicio={venta.servicios.idServicio}, @cantidad={venta.servicios.cantidad}, @idTicket={idTicket}");
+                    venderServicio @idServicio={venta.servicios.idServicio}, @cantidad={venta.servicios.cantidad}, @idTicket={idTicket}, @idEmpleado={idEmpleado}");
                 }
             }
             var ticket = await dbDynamic.Tickets.FindAsync(idTicket);

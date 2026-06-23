@@ -11,5 +11,9 @@ public partial class TicketMedicamento
 
     public int Cantidad { get; set; }
 
+    public int? IdEmpleado { get; set; }
+
+    public virtual Empleado? IdEmpleadoNavigation { get; set; }
+
     public virtual Medicamento IdMedicamentoNavigation { get; set; } = null!;
 }

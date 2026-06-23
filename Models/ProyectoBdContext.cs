@@ -15,6 +15,8 @@ public partial class ProyectoBdContext : DbContext
     {
     }
 
+    public virtual DbSet<BitacoraTicket> BitacoraTickets { get; set; }
+
     public virtual DbSet<Cita> Citas { get; set; }
 
     public virtual DbSet<Cobro> Cobros { get; set; }
@@ -69,16 +71,51 @@ public partial class ProyectoBdContext : DbContext
 
     public virtual DbSet<VerReceta> VerRecetas { get; set; }
 
-  
+    public virtual DbSet<VerTicket> VerTickets { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AS");
+
+        modelBuilder.Entity<BitacoraTicket>(entity =>
+        {
+            entity.HasKey(e => e.IdBitacora);
+
+            entity.Property(e => e.IdBitacora).HasColumnName("idBitacora");
+            entity.Property(e => e.CantidadMedicamento).HasColumnName("cantidadMedicamento");
+            entity.Property(e => e.CantidadServicio).HasColumnName("cantidadServicio");
+            entity.Property(e => e.FechaTicket)
+                .HasColumnType("datetime")
+                .HasColumnName("fechaTicket");
+            entity.Property(e => e.IdEmpleado).HasColumnName("idEmpleado");
+            entity.Property(e => e.IdMedicamento).HasColumnName("idMedicamento");
+            entity.Property(e => e.IdServicio).HasColumnName("idServicio");
+            entity.Property(e => e.IdTicket).HasColumnName("idTicket");
+            entity.Property(e => e.NombreEmpleado)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("nombreEmpleado");
+            entity.Property(e => e.NombreMedicamento)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("nombreMedicamento");
+            entity.Property(e => e.NombreServicio)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("nombreServicio");
+            entity.Property(e => e.TotalTicket)
+                .HasColumnType("money")
+                .HasColumnName("totalTicket");
+        });
 
         modelBuilder.Entity<Cita>(entity =>
         {
             entity.HasKey(e => e.FolioCita);
 
+            entity.ToTable(tb => tb.HasTrigger("trReembolsarCita"));
+
             entity.Property(e => e.FolioCita).HasColumnName("folioCita");
+            entity.Property(e => e.CancelaDoc).HasColumnName("cancelaDoc");
             entity.Property(e => e.Estatus)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -123,16 +160,9 @@ public partial class ProyectoBdContext : DbContext
         {
             entity.HasKey(e => new { e.NumeroConsultorio, e.IdDoctor, e.HoraOcupacion, e.HoraLiberacion });
 
-            entity.Property(e => e.NumeroConsultorio)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("numeroConsultorio");
+            entity.Property(e => e.NumeroConsultorio).HasColumnName("numeroConsultorio");
             entity.Property(e => e.IdDoctor).HasColumnName("idDoctor");
-            entity.Property(e => e.HoraOcupacion)
-                .HasColumnType("datetime")
-                .HasColumnName("horaOcupacion");
-            entity.Property(e => e.HoraLiberacion)
-                .HasColumnType("datetime")
-                .HasColumnName("horaLiberacion");
+            entity.Property(e => e.FechaAsignacion).HasColumnName("fechaAsignacion");
 
             entity.HasOne(d => d.IdDoctorNavigation).WithMany(p => p.Consultorios)
                 .HasForeignKey(d => d.IdDoctor)
@@ -380,6 +410,8 @@ public partial class ProyectoBdContext : DbContext
         {
             entity.HasKey(e => new { e.FolioReceta, e.Medicamentos }).HasName("PK__tmp_ms_x__B6C45C7DB54F18B4");
 
+            entity.ToTable(tb => tb.HasTrigger("trFinalizarCita"));
+
             entity.Property(e => e.FolioReceta).HasColumnName("folioReceta");
             entity.Property(e => e.Medicamentos)
                 .HasMaxLength(200)
@@ -424,7 +456,7 @@ public partial class ProyectoBdContext : DbContext
         {
             entity.HasKey(e => e.IdTicket).HasName("PK__Ticket__22B1456F63C1DA93");
 
-            entity.ToTable("Ticket");
+            entity.ToTable("Ticket", tb => tb.HasTrigger("trg_Bitacora_TicketBitacora"));
 
             entity.Property(e => e.IdTicket).HasColumnName("idTicket");
             entity.Property(e => e.FechaTicket)
@@ -444,6 +476,11 @@ public partial class ProyectoBdContext : DbContext
             entity.Property(e => e.IdMedicamento).HasColumnName("idMedicamento");
             entity.Property(e => e.IdTicket).HasColumnName("idTicket");
             entity.Property(e => e.Cantidad).HasColumnName("cantidad");
+            entity.Property(e => e.IdEmpleado).HasColumnName("idEmpleado");
+
+            entity.HasOne(d => d.IdEmpleadoNavigation).WithMany(p => p.TicketMedicamentos)
+                .HasForeignKey(d => d.IdEmpleado)
+                .HasConstraintName("FK_ticketMedicamento_Empleados");
 
             entity.HasOne(d => d.IdMedicamentoNavigation).WithMany(p => p.TicketMedicamentos)
                 .HasForeignKey(d => d.IdMedicamento)
@@ -460,6 +497,11 @@ public partial class ProyectoBdContext : DbContext
             entity.Property(e => e.IdServicio).HasColumnName("idServicio");
             entity.Property(e => e.IdTicket).HasColumnName("idTicket");
             entity.Property(e => e.Cantidad).HasColumnName("cantidad");
+            entity.Property(e => e.IdEmpleado).HasColumnName("idEmpleado");
+
+            entity.HasOne(d => d.IdEmpleadoNavigation).WithMany(p => p.TicketServicios)
+                .HasForeignKey(d => d.IdEmpleado)
+                .HasConstraintName("FK_ticketServicio_Empleados");
 
             entity.HasOne(d => d.IdServicioNavigation).WithMany(p => p.TicketServicios)
                 .HasForeignKey(d => d.IdServicio)
@@ -635,6 +677,31 @@ public partial class ProyectoBdContext : DbContext
             entity.Property(e => e.Paciente)
                 .HasMaxLength(203)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<VerTicket>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToView("verTickets");
+
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Empleado)
+                .HasMaxLength(203)
+                .IsUnicode(false);
+            entity.Property(e => e.FechaTicket).HasColumnType("datetime");
+            entity.Property(e => e.IdTicket).HasColumnName("idTicket");
+            entity.Property(e => e.PrecioMedicamento)
+                .HasColumnType("money")
+                .HasColumnName("precioMedicamento");
+            entity.Property(e => e.TipoArticulo)
+                .HasMaxLength(11)
+                .IsUnicode(false);
+            entity.Property(e => e.TotalTicket)
+                .HasColumnType("money")
+                .HasColumnName("totalTicket");
         });
 
         OnModelCreatingPartial(modelBuilder);

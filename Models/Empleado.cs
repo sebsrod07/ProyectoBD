@@ -28,4 +28,8 @@ public partial class Empleado
     public virtual Horario? IdHorarioNavigation { get; set; }
 
     public virtual Usuario? IdUsuarioNavigation { get; set; }
+
+    public virtual ICollection<TicketMedicamento> TicketMedicamentos { get; set; } = new List<TicketMedicamento>();
+
+    public virtual ICollection<TicketServicio> TicketServicios { get; set; } = new List<TicketServicio>();
 }
