@@ -107,4 +107,36 @@ public class EmpleadosController:BaseController
             return Results.BadRequest(ex.Message);
         }
     }
+    [HttpPut]
+    [Route("/empleados/darDeBaja")]
+    public async Task<IResult> darDeBajaEmpleado(string token, int idEmpleado)
+    {
+        var dbDynamic =ObtenerContextoDinamico(token, "SECRETARIO");
+        if(dbDynamic is null)
+            return Results.Unauthorized();
+        try
+        {
+            var empleado= await dbDynamic.Empleados.Include(e=>e.Doctores).ThenInclude(c=>c.Cita).FirstOrDefaultAsync(e => e.IdEmpleado == idEmpleado);
+            if( empleado is null)
+                return Results.NotFound("Empleado no encontrado");
+            bool esDoctor=empleado.Doctores is not null && empleado.Doctores.Any();
+
+            if(esDoctor)
+            {
+                if(empleado.Doctores.SelectMany(d=>d.Cita).Any(c=>c.Estatus=="PENDIENTE DE ATENCION"))
+                    throw new Exception("El Doctor tiene citas pendientes");
+                else
+                    empleado.Estatus="Baja";
+            }
+            else
+                empleado.Estatus="Baja";
+            await dbDynamic.SaveChangesAsync();
+            return Results.Ok("Empleado dado de baja");
+        }
+        catch(Exception ex)
+        {
+            var mensaje=ex.InnerException != null ? ex.InnerException.Message:ex.Message;
+            return Results.BadRequest(mensaje);
+        }
+    }
 }
