@@ -32,4 +32,6 @@ public partial class Empleado
     public virtual ICollection<TicketMedicamento> TicketMedicamentos { get; set; } = new List<TicketMedicamento>();
 
     public virtual ICollection<TicketServicio> TicketServicios { get; set; } = new List<TicketServicio>();
+
+    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 }

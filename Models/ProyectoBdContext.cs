@@ -15,6 +15,10 @@ public partial class ProyectoBdContext : DbContext
     {
     }
 
+    public virtual DbSet<BitacoraCita> BitacoraCitas { get; set; }
+
+    public virtual DbSet<BitacoraRecetum> BitacoraReceta { get; set; }
+
     public virtual DbSet<BitacoraTicket> BitacoraTickets { get; set; }
 
     public virtual DbSet<Cita> Citas { get; set; }
@@ -73,9 +77,52 @@ public partial class ProyectoBdContext : DbContext
 
     public virtual DbSet<VerTicket> VerTickets { get; set; }
 
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.UseCollation("Modern_Spanish_CI_AS");
+
+        modelBuilder.Entity<BitacoraCita>(entity =>
+        {
+            entity.HasKey(e => e.IdBitacora);
+
+            entity.Property(e => e.IdBitacora).HasColumnName("idBitacora");
+            entity.Property(e => e.Doctor)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Especialidad)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Estatus)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.FechaMovimiento)
+                .HasColumnType("datetime")
+                .HasColumnName("fechaMovimiento");
+            entity.Property(e => e.FolioCita).HasColumnName("folioCita");
+            entity.Property(e => e.IdDoctor).HasColumnName("idDoctor");
+            entity.Property(e => e.IdEspecialidad).HasColumnName("idEspecialidad");
+            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
+            entity.Property(e => e.Paciente)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<BitacoraRecetum>(entity =>
+        {
+            entity.HasNoKey();
+
+            entity.Property(e => e.FechaReceta).HasColumnType("datetime");
+            entity.Property(e => e.IdBit)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("idBit");
+            entity.Property(e => e.NomDoctor)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.NomPaciente)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
 
         modelBuilder.Entity<BitacoraTicket>(entity =>
         {
@@ -112,7 +159,12 @@ public partial class ProyectoBdContext : DbContext
         {
             entity.HasKey(e => e.FolioCita);
 
-            entity.ToTable(tb => tb.HasTrigger("trReembolsarCita"));
+            entity.ToTable(tb =>
+                {
+                    tb.HasTrigger("trBitacoraCitas");
+                    tb.HasTrigger("trBitacoraCitasUpdate");
+                    tb.HasTrigger("trReembolsarCita");
+                });
 
             entity.Property(e => e.FolioCita).HasColumnName("folioCita");
             entity.Property(e => e.CancelaDoc).HasColumnName("cancelaDoc");
@@ -462,9 +514,14 @@ public partial class ProyectoBdContext : DbContext
             entity.Property(e => e.FechaTicket)
                 .HasColumnType("datetime")
                 .HasColumnName("fechaTicket");
+            entity.Property(e => e.IdEmpleado).HasColumnName("idEmpleado");
             entity.Property(e => e.TotalTicket)
                 .HasColumnType("money")
                 .HasColumnName("totalTicket");
+
+            entity.HasOne(d => d.IdEmpleadoNavigation).WithMany(p => p.Tickets)
+                .HasForeignKey(d => d.IdEmpleado)
+                .HasConstraintName("FK_Ticket_Empleados");
         });
 
         modelBuilder.Entity<TicketMedicamento>(entity =>
